@@ -1,37 +1,67 @@
 from aiogram import types
-def new_user()->types.InlineKeyboardMarkup:
-    builder = types.InlineKeyboardMarkup()
-    builder.add(types.InlineKeyboardButton(
-        text="Да!",
-        callback_data="try_yes")
-    )
-    builder.add(types.InlineKeyboardButton(
-        text='Нет-хочу сразу купить тариф. 🇳🇱',
-        callback_data='tariffs'))
+
+import db.model
+
+
+class User:
+    def __init__(self, uid, key=None, data=None, free=False):
+        self.uid = uid
+        self.key = key
+        self.data = data
+        self.free = free
+
+    def upload_user(self, database: db.model.DB):
+        cur = database.conn.cursor()
+        query = """SELECT (key, data, free) FROM USERS where uid=$1"""
+        cur.execute(query, self.uid)
+        tp = cur.fetchone()
+        self.key, self.data, self.free = tp[0], tp[1], tp[2]
+
+    def __str__(self):
+        return str(self.uid)+self.key+self.data+self.free
+
+def new_user()->types.ReplyKeyboardMarkup:
+    builder = types.ReplyKeyboardMarkup()
+    builder.add(types.KeyboardButton(
+        text="Да!"))
+    builder.add(types.KeyboardButton(
+        text='Нет-хочу сразу купить тариф. 🇳🇱'))
     return builder
+
 
 def main_loby()->types.ReplyKeyboardMarkup:
     builder = types.ReplyKeyboardMarkup(resize_keyboard=True)
     builder.row(types.KeyboardButton(
-        text="Тарифы",
-        callback_data="tariffs")
-    )
+        text="Тарифы"
+    ))
     builder.insert(types.KeyboardButton(
-        text="Мой ключ\n",
-        callback_data="mytarif")
-    )
+        text="Мой ключ"
+    ))
     builder.row(types.KeyboardButton(
-        text="Поддержка\n",
-        callback_data="support")
-    )
+        text="Поддержка"
+    ))
     builder.insert(types.KeyboardButton(
-        text="FAQ\n",
-        callback_data="FAQ")
-    )
+        text="FAQ"
+    ))
     builder.insert(types.KeyboardButton(
-        text="Инструкция\n",
-        callback_data="instruction")
-    )
+        text="Инструкция\n"
+    ))
+    return builder
+
+def tariffs():
+    builder = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    builder.row(types.KeyboardButton(
+        text="Месяц - 149 рублей"
+    ))
+    builder.insert(types.KeyboardButton(
+        text="3 Месяца - 349 рублей"
+    ))
+    builder.row(types.KeyboardButton(
+        text="Целый год - 999 рублей"
+    ))
+    builder.insert(types.KeyboardButton(
+        text="Главное меню"
+    ))
     return builder
 
 
