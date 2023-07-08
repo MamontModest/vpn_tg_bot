@@ -34,15 +34,30 @@ dp = Dispatcher(bot)
 # admins
 admins = list(map(int, os.getenv("admins").split(",")))
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+BROKER_HOST = os.getenv('BROKER_HOST')
+BROKER_PASSWORD = os.getenv('BROKER_PASSWORD')
+BROKER_PORT = os.getenv('BROKER_PORT')
+BROKER_USERNAME = os.getenv('BROKER_USERNAME')
+BROKER_URL = os.getenv('BROKER_URL')
+
+credentials = pika.PlainCredentials(BROKER_USERNAME, BROKER_PASSWORD)
+parameters = pika.ConnectionParameters(BROKER_HOST,
+                                       int(BROKER_PORT),
+                                       BROKER_URL,
+                                       credentials)
+
+connection = pika.BlockingConnection(parameters)
+
 channel = connection.channel()
 channel.queue_declare(queue="keys")
 channel.queue_declare(queue="server")
+
 
 async def f():
     while True:
         print(1)
         await asyncio.sleep(10)
+
 
 async def main():
     await dp.start_polling(bot)
