@@ -51,7 +51,7 @@ def init_handlers(dp: aiogram.Dispatcher, db: DB, cash_users: set, admins: list[
             await message.answer(text=admin.server_example())
             flags[message.from_user.id] = "create_server"
             return
-
+    # Тарифы + ключ
     @dp.message_handler(text='Тарифы')
     @dp.message_handler(text='Нет-хочу сразу купить тариф. 🇳🇱')
     async def admin_handler(message: types.Message):
@@ -62,10 +62,19 @@ def init_handlers(dp: aiogram.Dispatcher, db: DB, cash_users: set, admins: list[
         us = users.User(message.from_user.id)
         print(us)
 
-
+    # пробный период
     @dp.message_handler(text="Да!")
     async def user_handler(message: types.Message):
+        await message.answer(
+            text="Супер, мой ВПН работает внутри приложения 'Outline'\nВам нужно его скачать, вот ссылки :",
+            reply_markup=users.free_period_Inline())
+        await message.answer(text="Если вы готовы, мы можем начать пробный период прямо сейчас",
+                             reply_markup=users.free_period())
+
+    @dp.message_handler(text="Хорошо скачал. Что далее?")
+    async def user_handler(message: types.Message):
         pass
+
 
 
 
