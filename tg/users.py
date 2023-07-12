@@ -16,6 +16,40 @@ class User:
         cur.execute(query, self.uid)
         tp = cur.fetchone()
         self.key, self.data, self.free = tp[0], tp[1], tp[2]
+        database.conn.commit()
+        cur.close()
+    def create_user(self, database: db.model.DB):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        cur = database.conn.cursor()
+        query = """INSERT INTO USERS (uid, vpn_key_id, vpn_key, datetime, free) values($1, $2, $3, $4, $5)"""
+        cur.execute(query, self.uid, None, None, None, True)
+        database.conn.commit()
+        cur.close()
 
     def __str__(self):
         return str(self.uid) + self.key + self.data + self.free
